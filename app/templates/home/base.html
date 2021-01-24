@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>pxyz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-4.1.3.min.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-4.1.3.bundle.min.js') }}"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <a class="navbar-brand" href="#">PXYZ</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.html">登录</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.html">注册</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout.html">退出</a>
+                </li>
+            </ul>
+            <form class="form-inline">
+                <input class="form-control" type="text" placeholder="Search">
+                <button class="btn btn-success" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>©2021 pxyz 备案</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
