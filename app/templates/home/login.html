@@ -1,6 +1,28 @@
 {% extends 'home/base.html' %}
 
 {% block content %}
-
+    <div class="row">
+        <div class="col-md-4 offset-md-4 mt-3">
+            <div class="card">
+                <div class="card-body pt-5 pb-5">
+                    <form action="">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="input_contact">账号</label>
+                                <input type="text" id="input_contact" class="form-control input-lg" placeholder="用户名/邮箱/手机号码" name="contact" type="text">
+                            </div>
+                            <div class="col-md-12" id="error_contact"></div>
+                            <div class="form-group">
+                                <label for="input_password">密码</label>
+                                <input type="text" id="input_password" class="form-control input-lg" placeholder="密码" name="password" type="password" value="">
+                            </div>
+                            <div class="col-md-12" id="error_password"></div>
+                            <a href="user.html" class="btn btn-lg btn-success btn-block">登录</a>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
