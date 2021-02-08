@@ -1,0 +1,15 @@
+{% with msgs = get_flashed_messages(category_filter=['success']) %}
+    {% if msgs %}
+        {% for msg in msgs %}
+            <p class="text-success">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+{% with msgs = get_flashed_messages(category_filter=['danger']) %}
+    {% if msgs %}
+        {% for msg in msgs %}
+            <p class="text-danger">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}

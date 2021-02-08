@@ -1,0 +1,61 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="row">
+    {% include 'home/usermenu.html' %}
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">用户列表</h3>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <th>编号</th>
+                            <th>昵称</th>
+                            <th>邮箱</th>
+                            <th>手机</th>
+                            <th>头像</th>
+                            <th>状态</th>
+                            <th>注册时间</th>
+                            <th>操作事项</th>
+                        </tr>
+                        {% for user in page_users.items %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.phone }}</td>
+                            <td>
+                                {% if user.face %}
+                                    <img src="{{ url_for('static', filename='user/'+user.face) }}" width="50px" alt="">
+                                {% else %}
+                                    <img src="holder.js/50x50">
+                                {% endif %}
+                            </td>
+                            {% if user.star<0 %}
+                                <td>冻结</td>
+                            {% else %}
+                                <td>正常</td>
+                            {% endif %}
+                            <td>{{ user.add_time }}</td>
+                            <td>
+                                <form class="d-inline" action="?op=unfounded&user_id={{ user.id }}" method="POST">
+                                    <button class="btn btn-outline-success btn-sm">解冻</button>
+                                </form>
+                                <form class="d-inline" action="?op=freeze&user_id={{ user.id }}" method="POST">
+                                    <button class="btn btn-outline-danger btn-sm">冻结</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% import 'home/pagination.html' as pg %}
+            {{ pg.render_pagination(page_users, 'home.userplus') }}
+        </div>
+    </div>
+</div>
+{% endblock %}

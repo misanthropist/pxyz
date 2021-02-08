@@ -1,0 +1,164 @@
+{% extends 'home/base.html' %}
+
+{% block style %}
+    <style>
+        .select {background-color: antiquewhite;}
+    </style>
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('static', filename='js/hls.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/DPlayer.min.js') }}"></script>
+    <script>
+        var playlist = document.querySelectorAll("#playlist ul li"),
+            aside = document.querySelectorAll("#playlist"),
+            dp = new DPlayer({
+                container: document.getElementById('dplayer'),
+                video: {
+                    url: playlist[0].getAttribute("data-url"),
+                },
+                pluginOptions: {
+
+                },
+                danmaku: {
+                    maximum: 1000,
+                    id: '{{ item.id }}',
+                    api: "/tm/",
+                    user: "{{ session['login_user'] }}"
+                }
+        });
+        for (var i=0; i<playlist.length; i++) (function(elem) {
+            elem.addEventListener("click", function(e) {
+                console.log(elem.value)
+                dp.video.url=elem.getAttribute("data-url");
+                for (var i=0; i<playlist.length; i++) {
+                    playlist[i].className = playlist[i].className.replace("select", "");
+                }
+                elem.className+="select";
+                dp.switchVideo(
+                    {
+                        url: elem.getAttribute("data-url")
+                    }
+                )
+            });
+        })(playlist[i]);
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8">
+            <div id="dplayer"></div>
+        <aside id="playlist">
+            <header>
+                <h4>播放列表</h4>
+            </header>
+            <ul>
+                <li data-url="{{ url_for('static', filename=item.url) }}">{{ item.title }}</li>
+            </ul>
+        </aside>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">内容介绍</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <td>名称</td>
+                            <td>{{ item.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>标签</td>
+                            <td>{{ item.tag.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>查看次数</td>
+                            <td>{{ item.click_num }}</td>
+                        </tr>
+                        <tr>
+                            <td>评论数量</td>
+                            <td>{{ item.comment_num }}</td>
+                        </tr>
+                        <tr>
+                            <td>简介</td>
+                            <td>{{ item.info }}</td>
+                        </tr>
+                    </table>
+                    
+                    <form class="d-inline" action="?op=add_collect" method="post">
+                        <button class="btn btn-outline-success">收藏</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            {% include 'home/flash_info.html' %}
+            <div class="card">
+                {% if 'login_user' not in session %}
+                    <div class="card-body">
+                        <div class="">
+                            <strong>请先<a href="{{ url_for('home.login') }}" class="text-info">登录</a>，才可参与评论或者收藏</strong>
+                        </div>
+                    </div>
+                {% endif %}
+                <ol class="breadcrumb">
+                    <li>评论({{ item.comment_num }}) 收藏({{ item.collect_num }}) 点击({{ item.click_num }})</li>
+                </ol>
+                <form class="m-3" action="?op=add_comment" method="post">
+                    <div class="form-group">
+                        <div>
+                            <lable for="input_content">{{ form.content.label }}</lable>
+                            {{ form.content }}
+                        </div>
+                        <div class="col-xs-12" id="error_content"></div>
+                    </div>
+                    {{ form.csrf_token }}
+                    {{ form.submit }}
+                </form>
+                <ul class="list-group m-3">
+                    {% for comment in page_comments.items %}
+                    <li class="list-group-item">
+                        <a class="float-left" href="{{ url_for('home.user') }}">
+                            {% if comment.user.face %}
+                                <img src="{{ url_for('static', filename='user/'+comment.user.face) }}" alt="" style="width:50px">
+                            {% else %}
+                                <img src="holder.js/50x50" alt="50x50" class="rounded-circle"></a>
+                            {% endif %}
+                        <div class="card">
+                            <header class="card-header">
+                                <div class="card-title">
+                                    <a href="{{ url_for('home.user') }}" >{{ comment.user.name }}</a>评论于
+                                    <time>{{ comment.add_time }}</time>
+                                </div>
+                            </header>
+                            <div class="card-body">
+                                <p>{{ comment.content }}</p>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="col-md-12">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item"><a class="page-link" href="{{ url_for('home.play', item_id=item.id, page=1) }}">首页</a></li>
+                        
+                        {% if page_comments.has_prev %}
+                            <li class="page-item"><a href="{{ url_for('home.play', item_id=item.id, page=page_comments.prev_num) }}" class="page-link">上一页</a></li>
+                        {% endif %}
+                
+                        {% if page_comments.has_next %}
+                            <li class="page-item"><a href="{{ url_for('home.play', item_id=item.id, page=page_comments.next_num) }}" class="page-link">下一页</a></li>
+                        {% endif %}
+                
+                        <li class="page-item"><a class="page-link" href="{{ url_for('home.play', item_id=item.id, page=page_comments.pages) }}">尾页</a></li>
+                
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+    <div class="row">
+        {% include 'home/usermenu.html' %}
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>编号</td>
+                            <td>登录时间</td>
+                            <td>登录IP</td>
+                        </tr>
+                        {% for userlog in page_userlog.items %}
+                        <tr>
+                            <td>{{ userlog.id }}</td>
+                            <td>{{ userlog.add_time }}</td>
+                            <td>{{ userlog.ip }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% import 'home/pagination.html' as pg %}
+                {{ pg.render_pagination(page_userlog, 'home.userlog') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

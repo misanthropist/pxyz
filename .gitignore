@@ -1,4 +1,8 @@
 temp/
+app/static/video/
+app/static/item/
+app/static/user/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,0 +1,38 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+    <div class="row">
+        {% include 'home/usermenu.html' %}
+        <div class="col-md-9">
+            {% include 'home/flash_info.html' %}
+            <div class="card">
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for comment in page_comments.items %}
+                        <li class="list-group-item">
+                            <div class="card">
+                                <header class="card-header">
+                                    <div class="card-title">评论于
+                                        <time>{{ comment.add_time }}</time>
+                                    </div>
+                                </header>
+                                <div class="card-body">
+                                    关于<a href="{{url_for('home.play', item_id=comment.item.id, page=1)}}">{{ comment.item.title }}</a>的评论：{{comment.content }}
+                                    
+                                <form class="d-inline" action="?op=delete&comment_id={{ comment.id }}" method="POST">
+                                    <button class="btn btn-outline-danger btn-sm float-right">删除</button>
+                                </form>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="col-md-12">
+                        {% import 'home/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_comments, 'home.comment') }}
+ 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+    <div class="row">
+        {% include 'home/usermenu.html' %}
+        <div class="card">
+            <div class="card-body">
+                {% include 'home/flash_info.html' %}
+                <form action="" method="post">
+                    {{ form.csrf_token }}
+                    {% for err in form.oldpwd.errors %}
+                        <div class="col-md-12 text-danger">{{ err }}</div>
+                    {% endfor %}
+                    <div class="form-group">
+                        {{ form.oldpwd }}
+                    </div>
+                    {% for err in form.newpwd.errors %}
+                        <div class="col-md-12 text-danger">{{ err }}</div>
+                    {% endfor %}
+                    <div class="form-group">
+                        {{ form.newpwd }}
+                    </div>
+                    {% for err in form.repwd.errors %}
+                        <div class="col-md-12 text-danger">{{ err }}</div>
+                    {% endfor %}
+                    <div class="form-group">
+                        {{ form.repwd }}
+                    </div>
+                    {{ form.submit }}
+                </form>
+           </div>
+        </div>
+    </div>
+{% endblock %}

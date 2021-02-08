@@ -1,0 +1,43 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+    <div class="row">
+        {% include 'home/usermenu.html' %}
+        <div class="col-md-9">
+        {% include 'home/flash_info.html' %}
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">收藏列表</div>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th>编号</th>
+                                <th>电影</th>
+                                <th>用户</th>
+                                <th>添加时间</th>
+                                <th>操作事项</th>
+                            </tr>
+                            {% for collect in page_collects.items %}
+                                <tr>
+                                    <td>{{ collect.id }}</td>
+                                    <td>{{ collect.item.title }}</td>
+                                    <td>{{ collect.user.name }}</td>
+                                    <td>{{ collect.add_time }}</td>
+                                    <td>
+                                        <form class="d-inline" action="?op=delete&collect_id={{ collect.id }}" method="POST">
+                                            <button class="btn btn-outline-danger btn-sm">删除</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% import 'home/pagination.html' as pg %}
+                {{ pg.render_pagination(page_collects, 'home.collect') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

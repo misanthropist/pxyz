@@ -1,0 +1,14 @@
+<div class="col-md-3">
+    <div class="list-group">
+        <a href="{{ url_for('home.user') }}" class="list-group-item">更新信息</a>
+        <a href="{{ url_for('home.pwd') }}" class="list-group-item">修改密码</a>
+        <a href="{{ url_for('home.comment', page=1) }}" class="list-group-item">评论记录</a>
+        <a href="{{ url_for('home.collect', page=1) }}" class="list-group-item">收藏作品</a>
+        <a href="{{ url_for('home.userlog', page=1) }}" class="list-group-item">登录日志</a>
+        {% if session['login_star']==99 %}
+            <a href="{{ url_for('home.tag', page=1) }}" class="list-group-item">标签管理</a>
+            <a href="{{ url_for('home.userplus', page=1) }}" class="list-group-item">用户管理</a>
+            <a href="{{ url_for('home.item', page=1) }}" class="list-group-item">作品管理</a>
+        {% endif %}
+    </div>
+</div>

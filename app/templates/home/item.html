@@ -1,0 +1,123 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="row">
+    {% include 'home/usermenu.html' %}
+    <div class="col-md-9">
+        {% include 'home/flash_info.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">作品列表</h3>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <th>编号</th>
+                            <th>片名</th>
+                            <th>标签</th>
+                            <th>评分</th>
+                            <th>操作事项</th>
+                        </tr>
+                        {% for item in page_items.items %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.title }}</td>
+                                <td>{{ item.tag.name }}</td>
+                                <td>{{ item.score }}</td>
+                                <td>
+                                    <form class="d-inline" action="?op=update&item_id={{ item.id }}" method="POST">
+                                        <button class="btn btn-outline-success btn-sm">编辑</button>
+                                    </form>
+                                    <form class="d-inline" action="?op=delete&item_id={{ item.id }}" method="POST">
+                                        <button class="btn btn-outline-danger btn-sm">删除</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% import 'home/pagination.html' as pg %}
+            {{ pg.render_pagination(page_items, 'home.item') }}
+        </div>
+        <div class="card">
+            <div class="card-header">
+                {% if op=='update' %}                   
+                    <h3 class="card-title">修改作品</h3> 
+                {% else %}
+                    <h3 class="card-title">添加作品</h3>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if op == 'update' %}
+                    <form action="?op=updated&item_id={{form.id}}" method="POST" enctype="multipart/form-data">
+                {% else %}
+                    <form action="?op=add" method="post" enctype="multipart/form-data">
+                {% endif %}
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        <label for="input_title">{{ form.title.label }}</label>
+                        {{ form.title }}
+                        {% for err in form.title.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="input_url">{{ form.url.label }}</label>
+                        {{ form.url }}
+                        {% for err in form.url.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                        <div style="margin-top:5px;">
+                            <div id="moviecontainer"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="input_info">{{ form.info.label }}</label>
+                        {{ form.info }}
+                        {% for err in form.info.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="input_logo">{{ form.logo.label }}</label>
+                        {{ form.logo }}
+                        {% for err in form.logo.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                        {% if form.logo_url %}
+                            <img src="{{url_for('static', filename='item/'+form.logo_url)}}" width="200px" alt="">
+                        {% else %}
+                            <img data-src="holder.js/262x166" style="margin-top:5px;" class="img-responsive"
+                             alt="">
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="input_score">{{ form.score.label }}</label>
+                        {{ form.score }}
+                        {% for err in form.score.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="input_tag_id">{{ form.tag_id.label }}</label>
+                        {{ form.tag_id }}
+                        {% for err in form.tag_id.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {% if op=='update' %}
+                            {{ form.update }}
+                        {% else %}
+                            {{ form.add }}
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

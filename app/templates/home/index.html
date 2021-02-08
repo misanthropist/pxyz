@@ -1,5 +1,25 @@
 {% extends 'home/base.html' %}
 
 {% block content %}
-    <h1>你好</h1>
+        <section id="itemlist">
+            <div class="row">
+               {% for item in items.items %}
+                    <div class="col-md-3 mt-3">
+                        <div class="text-center itemlist">
+                            {% if item.logo %}
+                                <img src="{{ url_for('static', filename='item/'+item.logo) }}" alt="" width="162px" height="166px">
+                            {% else %}
+                                <img src="holder.js/162x166" alt="">
+                            {% endif %}
+                            <span class="text-center">
+                            <a href="{{ url_for('home.play', item_id=item.id, page=1) }}" class="btn">{{ item.title[:5] }}</a></span>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="col-md-12">
+                    {% import 'home/pagination.html' as pg %}
+                    {{ pg.render_pagination(items, 'home.index_1') }}
+                </div>
+            </div>
+        </section>
 {% endblock %}
