@@ -439,7 +439,7 @@ class ItemForm(FlaskForm):
     logo = FileField(
         label='封面',
         validators=[
-            DataRequired('请上传封面！')
+            # DataRequired('请上传封面！')
         ],
         description='封面',
         render_kw={

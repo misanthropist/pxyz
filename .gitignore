@@ -2,6 +2,8 @@ temp/
 app/static/video/
 app/static/item/
 app/static/user/
+app/static/book/
+app/static/mzt/
 
 
 # Byte-compiled / optimized / DLL files

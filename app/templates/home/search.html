@@ -11,7 +11,7 @@
                     <img src="holder.js/162x166" alt="">
                 {% endif %}
                 <span class="text-center">
-                <a href="{{ url_for('home.play', item_id=search_item.id, page=1) }}" class="btn">{{ search_item.title[:5] }}</a></span>
+                <a href="{{ url_for('home.play', item_id=search_item.id, page=1) }}" class="btn">{{ search_item.title[:12] }}</a></span>
             </div>
         </div>
     {% endfor %}

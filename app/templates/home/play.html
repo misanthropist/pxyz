@@ -7,6 +7,66 @@
 {% endblock %}
 
 {% block script %}
+
+    {% if item.url.split('.')[-1].split('?')[0] == "json" %}
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script>
+        $.ajax({
+            url: "{{ url_for('static', filename=item.url.split('?')[0]) }}",
+            success: function(data) {
+                Object.keys(data).forEach(function(key1) {
+                    Object.keys(data[key1]).forEach(function(key2) {
+                        if (key2 == "{{ item.url.split('.')[-1].split('?')[1] }}") {
+                            Object.keys(data[key1][key2]).forEach(function(key3) {
+                                console.log(data[key1][key2][key3]);
+                                data[key1][key2][key3].forEach(function(key4) {
+                                    img = $('<img width="100%" src="'+"{{ url_for('static', filename='mzt/pics/') }}"+key4.split('/').slice('-1')+'">');
+                                    $("#mzt").append(img);
+                                });
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+    </script>
+
+    {% endif %}
+
+    {% if item.url.split('.')[1] == "epub" %}
+    <script src="{{ url_for('static', filename='js/jszip.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/epub.js') }}"></script>
+
+    <script>
+        var book = ePub("{{ url_for('static', filename=item.url) }}");
+        var rendition = book.renderTo("area", {
+            width: "100%",
+            height: "800px"
+        });
+        var displayed = rendition.display();
+        book.loaded.navigation.then(function(toc) {
+            // console.log(toc);
+        });    var keyListener = function(e){
+
+        // Left Key
+        if ((e.keyCode || e.which) == 37) {
+        rendition.prev();
+        }
+
+        // Right Key
+        if ((e.keyCode || e.which) == 39) {
+        rendition.next();
+        }
+
+        };
+
+        document.addEventListener("keyup", keyListener, false);
+        
+    </script>
+    {% endif %}
+    
+    {% if item.url.split('.')[1] == "m3u8" %}
     <script src="{{ url_for('static', filename='js/hls.js') }}"></script>
     <script src="{{ url_for('static', filename='js/DPlayer.min.js') }}"></script>
     <script>
@@ -44,21 +104,33 @@
         })(playlist[i]);
 
     </script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     <div class="row">
+
+        {% if item.url.split('.')[-1].split('?')[0] == "json" %}
+            <div class="col-md-8" id="mzt"></div>
+        {% endif %}
+
+        {% if item.url.split('.')[1] == "epub" %}
+        <div class="col-md-8" id="area"></div>
+        {% endif %}
+
+        {% if item.url.split('.')[1] == "m3u8" %}
         <div class="col-md-8">
             <div id="dplayer"></div>
-        <aside id="playlist">
-            <header>
-                <h4>播放列表</h4>
-            </header>
-            <ul>
-                <li data-url="{{ url_for('static', filename=item.url) }}">{{ item.title }}</li>
-            </ul>
-        </aside>
+            <aside id="playlist">
+                <header>
+                    <h4>播放列表</h4>
+                </header>
+                <ul>
+                    <li data-url="{{ url_for('static', filename=item.url) }}">{{ item.title }}</li>
+                </ul>
+            </aside>
         </div>
+        {% endif %}
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">

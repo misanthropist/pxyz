@@ -32,15 +32,15 @@ def root_login_require(func):
         return func(*args, **kwargs)
     return decorated_function
 
-@home.route('/',methods=['GET'])
-def index():
-    return redirect("/1/")
-
+@home.route('/')
 @home.route("/<int:page>/", methods=['GET', 'POST'])
-def index_1(page):
+def index(page=1):
     if not page:
         page = 1
-    items = Item.query.paginate(page=page, per_page=12)
+    if session.get('login_star', None) == 99:
+        items = Item.query.order_by(Item.id.desc()).paginate(page=page, per_page=12) 
+    else:
+        items = Item.query.filter(Item.score<=1).order_by(Item.id.desc()).paginate(page=page, per_page=12)
     return render_template('home/index.html', items=items)
 
 @home.route("/login/", methods=['GET', 'POST'])
@@ -414,7 +414,7 @@ def userplus(page):
 @root_login_require
 def item(page, op='list'):
     form = ItemForm()
-    page_items = Item.query.paginate(page=page, per_page=10)
+    page_items = Item.query.order_by(Item.add_time.desc()).paginate(page=page, per_page=10)
     if request.method == 'POST':
         op = request.args.get('op')
         if op == 'delete':
