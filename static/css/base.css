@@ -1,0 +1,36 @@
+html { font-size: 16px; }
+a { color: #0000CC; text-decoration: none; }
+ul { list-style-type: none; }
+body, ul { margin: 0; }
+form { display: inline-block; }
+:required { border-color: #88a;  }
+input { background: none; border: 1px solid #ccc; font-size: 1rem; display: inline-block; outline: none; border-radius: 5px; margin: 0.1rem; width: 10rem; padding: 0.3rem;}
+input[type=submit] { width: 5rem; }
+input[type=submit]:hover { background: rgb(0, 173, 53); box-shadow: 0 0 0.2rem rgba(0, 173, 53, .5); cursor: pointer; }
+
+/* base */
+nav { margin-bottom: 1rem; border-bottom: 1px #ddd solid; text-align: center; }
+nav>ul { padding: 0.5rem;}
+nav>ul>li { display: inline-block; padding: 0;}
+nav>ul>li>a { font-size: 1.5rem; }
+footer { text-align: center; }
+
+
+/* itempad */
+#kw { border-color: #0000cc; border-radius: 1rem; border-style:solid; height: 1.3rem; display: block; margin: 1rem auto; outline: none; padding-left: .5rem; }
+#search { text-align: center; width: 100%; }
+#items { text-align: center; }
+#items>* { display: inline-block; padding: 0 0.5rem; }
+#pages { text-align: center; }
+#pages>ul { padding: 0.5rem; }
+#pages>ul>li { display: inline-block; padding: 0;}
+
+#epub_page {text-align: center; }
+#vid_area { text-align: center; }
+#vid_area video { max-width: 100%; max-height: 34rem;}
+#pics_area { text-align: center;}
+#pics_area img { display: inline-block; max-width: 35rem; }
+
+.ellipsis { position: absolute; left: 80%; top: 1%; display: none; }
+/* #hide_ellipsis { font-size: 2rem; position: absolute; right: 1rem; top: 0.2rem; display: none; }
+#show_ellipsis { font-size: 2rem; position: absolute; right: 1rem; top: 0.2rem; } */

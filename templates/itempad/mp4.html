@@ -1,0 +1,32 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ item.title }}
+{% endblock %}
+
+{% block content %}
+<div id="vid_area">
+    <h3>{{ item.title }}</h3>
+    <video src="{{ item.file_url }}" controls autoplay></video>
+</div>
+
+{{ macros.render_item_desc(item, user) }}
+
+{% endblock %}
+
+{% block script %}
+<script>
+if (localStorage.getItem("volume") == "undefined") {
+    localStorage.setItem("volume", 1);
+}
+var volume = localStorage.getItem("volume"),
+    item_id = Number(location.href.split("/").slice(-2,-1));
+$.each($("video"), function (i, ele) {
+    ele.volume = volume;
+    ele.addEventListener("volumechange", function (e) {
+        localStorage.setItem("volume", ele.volume);
+    });
+});
+</script>
+{% endblock %}

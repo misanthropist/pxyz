@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Pxyz - 用户
+{% endblock %}
+
+{% block style %}
+<style>
+    body {background: #f3f4f7;}
+</style>
+{% endblock %}
+
+{% block content %}
+        <div>
+            <img class="left" src="{{ other.cover_url }}" alt="{{ other.username }}" width="70px">
+            <div style="display: inline-block; height: 70px;">
+                {{ other.username }}
+                <br>
+                <span>加入于{{ (other.timestamp|string).split(' ')[0] }}</span>
+            </div>
+        </div>
+        {% if not user == other %}
+            {% if not user.is_following(other) %}
+                <form action="{{ url_for('user.follow', user_id=other.id) }}" method="POST">
+                    <input type="submit" value="关注">
+                </form>
+            {% else %}
+                <form action="{{ url_for('user.unfollow', user_id=other.id) }}" method="POST">
+                    <input type="submit" value="取消关注">
+                </form>
+            {% endif %}
+        {% else %}
+            {% if user.can('MANAGE') %}
+                <a href="{{ url_for('user.userpad') }}">用户管理</a>
+            {% endif %}
+        {% endif %}
+        <p>正在关注：
+            {% for follow_person in other.follow_persons[:16]|sort(reverse=True, attribute="timestamp") %}
+                <a href="{{ url_for('user.index', user_id=follow_person.followed_id) }}">{{ follow_person.followed.username }}</a>
+            {% endfor %}
+            <a href="{{ url_for('user.search', ukw='followed_'+other.id|string) }}">更多></a>
+        </p>
+        <p>正在被关注：
+            {% for followed_by_person in other.followed_by_persons[:16]|sort(reverse=True, attribute="timestamp") %}
+                <a href="{{ url_for('user.index', user_id=followed_by_person.follow_id) }}">{{ followed_by_person.follow.username }}</a>
+            {% endfor %}
+            <a href="{{ url_for('user.search', ukw='follow_'+other.id|string) }}">更多></a>
+        </p>
+        <p>上传内容：
+            {% for item in other.items[:16]|sort(reverse=True, attribute="timestamp") %}
+                <a href="{{ url_for('itempad.content', item_id=item.id) }}">{{ item.title|truncate(7, killwords=True, leeway=3) }}</a> |
+            {% endfor %}
+            <a href="{{ url_for('itempad.search', kw='user_'+other.id|string) }}">更多></a>
+        </p>
+        <p>收藏内容：
+            {% for collection in (other.collections|sort(reverse=True, attribute="timestamp"))[:16] %}
+                <a href="{{ url_for('itempad.content', item_id=collection.collected_id) }}">{{ collection.collected.title|truncate(7, killwords=True, leeway=3) }}</a> |
+            {% endfor %}
+            <a href="{{ url_for('itempad.search', kw='collect_'+other.id|string) }}">更多></a>
+        </p>
+        <p>评论内容：
+            {% for comment in other.comments[:16]|sort(reverse=True, attribute="timestamp") %}
+                <a href="{{ url_for('itempad.content', item_id=comment.item_id) }}">{{ comment.content[:10]|truncate(7, killwords=True, leeway=3) }}</a> |
+            {% endfor %}
+            <a href="{{ url_for('itempad.search', kw='comment_'+other.id|string) }}">更多></a>
+        </p>
+        <p>网站管理：
+        </p>
+
+{% endblock %}

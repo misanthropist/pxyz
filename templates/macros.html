@@ -1,0 +1,118 @@
+{% macro render_pagination(pagination, url_route) %}
+    <ul>
+        <li><a href="{{ url_for(url_route, page=1) }}">首页</a></li>
+        {% if pagination.has_prev %}
+            <li><a href="{{ url_for(url_route, page=pagination.prev_num) }}">上一页</a></li>
+        {% endif %}
+
+        {% if pagination.has_next %}
+            <li><a href="{{ url_for(url_route, page=pagination.next_num) }}">下一页</a></li>
+        {% endif %}
+
+        <li><a href="{{ url_for(url_route, page=pagination.pages) }}">尾页</a></li>
+    </ul>
+{% endmacro %}
+
+
+{% macro render_items(pagination, user) %}
+    {% for item in pagination.items%}
+        <div style="display: inline-block; position: relative;">
+            {% if user and user.can('MANAGE') %}
+                {%if item.deleted %}
+                    <form style="display: inline-block; position: absolute; top: 1rem;" action="{{ url_for('itempad.restore', item_id=item.id) }}" method="POST">
+                        <input type="submit" value="恢复">
+                    </form>
+                {% else %}
+                    <form style="display: inline-block; position: absolute; top: 1rem;" action="{{ url_for('itempad.delete_item', item_id=item.id) }}" method="POST">
+                        <input type="submit" value="回收">
+                    </form>
+                {% endif %}
+            {% endif %}
+            <a href="{{ url_for('itempad.content', item_id=item.id) }}">
+                <img src="{{ item.cover_url }}" alt="" height="250px">
+            </a>
+            <p>{{ item.title|truncate(7, killwords=True, leeway=3) }}</p>
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro render_item_desc(item, user) %}
+    <div>
+        <p>上传者：<a href="{{ url_for('user.index', user_id=item.uploader.id) }}">{{ item.uploader.username }}</a></p>
+
+        {% if user and user.can('COLLECT') %}
+            {% if user.is_collecting(item) %}
+                <form action="{{ url_for('itempad.uncollect', item_id=item.id) }}" method="POST">
+                    <input type="submit" value="取消收藏">
+                </form>
+            {% else %}
+                <form action="{{ url_for('itempad.collect', item_id=item.id) }}" method="POST">
+                    <input type="submit" value="收藏">
+                </form>
+            {% endif %}
+        {% endif %}
+
+        {% if user and user.can('MANAGE') %}
+            <form action="{{ url_for('itempad.delete_item', item_id=item.id) }}" method="POST">
+                <input type="submit" value="删除">
+            </form>
+        {% endif %}
+        
+        {% set comments=item.comments.all() %}
+        <h3>{{ comments|length }} comments</h3>
+        {% if item.comments %}
+            {% for comment in comments|sort(attribute='timestamp', reverse=True) %}
+                <div>
+                    <div>
+                        <a href="{{ url_for('user.index', user_id=comment.commenter.id) }}">{{ comment.commenter.username}}</a>
+                        <small class="timestamp">{{ (comment.timestamp|string).split('.')[0] }}</small>
+                        {% if user.can('MANAGE') %}
+                            <form action="{{ url_for('itempad.delete_comment', item_id=item.id) }}" method="POST">
+                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                <input type="submit" value="删除">
+                            </form>
+                        {% endif %}
+                    </div>
+                    <p>{{ comment.content }}</p>
+                    <hr>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No comments.</p>
+        {% endif %}
+        {% if user and user.can('COMMENT') %}
+            <form action="{{ url_for('itempad.new_comment', item_id=item.id) }}" method="POST">
+                <label for="new_comment">新的评论：</label>
+                <br>
+                <textarea name="new_comment" id="new_comment" cols="30" rows="10"></textarea>
+                <br>
+                <input type="submit" value="提交评论">
+            </form>
+        {% endif %}
+    </div>
+    
+{% endmacro %}
+
+
+{% macro render_users(pagination, user) %}
+    {% for other in pagination.items%}
+        <div style="display: inline-block; position: relative;">
+            {% if user and user.can('MANAGE') %}
+                {%if other.role.name == 'Locked' %}
+                    <form style="display: inline-block; position: absolute; top: 1rem;" action="{{ url_for('user.unlock', user_id=other.id) }}" method="POST">
+                        <input type="submit" value="解锁">
+                    </form>
+                {% elif other.role.name == 'User' %}
+                    <form style="display: inline-block; position: absolute; top: 1rem;" action="{{ url_for('user.lock', user_id=other.id) }}" method="POST">
+                        <input type="submit" value="锁定">
+                    </form>
+                {% endif %}
+            {% endif %}
+            <a href="{{ url_for('user.index', user_id=other.id) }}">
+                <img src="{{ other.cover_url }}" alt="" width="180px">
+            </a>
+            <p>{{ other.username|truncate(7, killwords=True, leeway=3) }}</p>
+        </div>
+    {% endfor %}
+{% endmacro %}

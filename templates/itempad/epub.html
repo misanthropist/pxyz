@@ -1,0 +1,245 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ item.title }}
+{% endblock %}
+
+{% block styles %}
+<style>
+    #epub_area, #epub_page, #catalog { position: relative; background-color: #8e7f6b; }
+    #epub_page {text-align: center; }
+    #left_page { position:absolute; left: 0; width: 30%; height: 100%; z-index: 99;}
+    #right_page { position:absolute; right: 0; width: 30%; height: 100%; z-index: 99;}
+    
+    #up_page { position:absolute; top: 0; width: 0; height: 0; z-index: -1;}
+    #down_page { position:absolute; bottom: 0; width: 0; height: 0; z-index: -1;}
+</style>
+{% endblock %}
+
+{% block content %}
+<h3>{{ item.title }}</h3>
+
+<div id="epub_setting">
+    <a href="#color_mode" id="color_mode">纯白</a>
+    <a href="#switch_page_mode" id="switch_page_mode">上下翻页</a>
+    <a href="#progress_bar" id="progress_bar">进度</a>
+    <input id="full-search" type="text" name="full-search" placeholder="搜索" onkeydown="enter_key()">
+    <div id="search-result"></div>
+    <br>
+</div>
+
+
+<div id="epub_area">
+    <a href="#epub_area"  id="left_page"></a>
+    <a href="#epub_area"  id="right_page"></a>
+    <a href="#epub_area"  id="up_page"></a>
+    <a href="#epub_area"  id="down_page"></a>
+</div>
+<div id="epub_page">
+    <a href="#epub_area" id="prev">上一页</a>
+    <a href="#epub_area" id="next">下一页</a>
+</div>
+<div id="catalog"></div>
+
+{{ macros.render_item_desc(item, user) }}
+
+{% endblock %}
+
+{% block script %}
+<script>
+    var book = ePub("{{ item.file_url }}");
+    var rendition = book.renderTo("epub_area", {
+        manager: "continuous",
+        flow: "paginated",
+        width: "100%"
+    });
+    rendition.display();
+
+
+    //显示图书目录
+    book.loaded.navigation.then(function(toc) {
+        toc.forEach(function(chapter) {
+            $("<a/>", {
+                "href": "#epub_area",
+                'aria-data': chapter.href,
+                data: {'ref': chapter.href},
+                text: chapter.label+'|',
+                click: function() {
+                    rendition.display($(this).data("ref"));
+                }
+            }).appendTo($('#catalog'))
+        });
+    });
+
+
+    // 翻页快捷键
+    $("#prev").click(function() {
+        rendition.prev();
+    });
+    $("#next").click(function() {
+        rendition.next();
+    });
+    $("#left_page").click(function() {
+        rendition.prev();
+    });
+    $("#right_page").click(function() {
+        rendition.next();
+    });
+    $("#up_page").click(function() {
+        rendition.prev();
+    });
+    $("#down_page").click(function() {
+        rendition.next();
+    });
+
+    var keyListener = function(e){
+        if ((e.keyCode || e.which) == 37) {
+            rendition.prev();
+        }
+        if ((e.keyCode || e.which) == 39) {
+            rendition.next();
+        }
+    };
+
+    document.addEventListener("keyup", keyListener, false);
+        
+    let LR = false;
+    $("#switch_page_mode").click(function(e) {
+        if (!LR) {
+            $("#right_page, #left_page").css({
+                "width": "0",
+                "height": "0",
+                "z-index": "-1"
+            });
+            $("#up_page, #down_page").css({
+                "width": "100%",
+                "height": "30%",
+                "z-index": "99"
+            });
+            e.target.text = "左右翻页";
+            LR =true;
+        } else {
+            $("#up_page, #down_page").css({
+                "width": "0",
+                "height": "0",
+                "z-index": "-1"
+            });
+            $("#right_page, #left_page").css({
+                "width": "30%",
+                "height": "100%",
+                "z-index": "99"
+            });
+            e.target.text = "上下翻页";
+            LR =false;
+        }
+    });
+    
+
+    //图书背景
+    let white = false;
+    $("#color_mode").click(function(e) {
+        if (!white) {
+            $("#epub_area, #epub_page, #catalog").css({
+                "background-color": "#fff"
+            });
+            e.target.text = "暗黄";
+            white = true;
+        } else {
+            $("#epub_area, #epub_page, #catalog").css({
+                "background-color": "#8e7f6b"
+            });
+            e.target.text = "纯白";
+            white = false;
+        }
+    });
+
+
+    //存储进度
+    var bar = $("#progress_bar")[0],
+        last_progress_cfi = '',
+        metadata = '',
+        total = '';
+
+    book.ready.then(function() {
+        metadata = book.package.metadata;
+        const stored = localStorage.getItem(metadata.title + '-locations');
+        console.log('metadata:', metadata);
+        if (stored) {
+            return book.locations.load(stored);
+        } else {
+            return book.locations.generate(1024); 
+        }
+    }).then(function() { 
+        localStorage.setItem(metadata.title + '-locations', book.locations.save());
+    }).then(function() {
+        
+        last_progress_cfi = localStorage.getItem(metadata.title + '-progress-cfi')
+        total = book.locations.total
+        if (last_progress_cfi) {
+            let progress = book.locations.locationFromCfi(last_progress_cfi)+'/'+total;
+            bar.textContent="进度|"+progress;
+            rendition.display(last_progress_cfi);
+        }
+    });
+    bar.addEventListener("click", function(e) {
+        let current_cfi = rendition.location.start.cfi,
+            progress = book.locations.locationFromCfi(current_cfi)+'/'+total;
+        e.target.text="进度|"+ progress;
+        localStorage.setItem(metadata.title + '-progress-cfi', current_cfi);
+
+    });
+    rendition.on('relocated', function(location) {
+        let current_cfi = location.start.cfi,
+            progress = book.locations.locationFromCfi(current_cfi)+'/'+total;
+        bar.textContent="进度|"+ progress;
+        localStorage.setItem(metadata.title + '-progress-cfi', current_cfi);
+    });
+
+
+    //全文搜索
+    var doSearch = (q) => {
+        return Promise.all(book.spine.spineItems.map(item => 
+            item
+                .load(book.load.bind(book))
+                .then(item.find.bind(item, q))
+                .finally(item.unload.bind(item))
+        )).then(results => Promise.resolve([].concat.apply([], results)))
+    }
+    var search = (q) => {
+        doSearch(q).then((result) => {
+            let p = $("<p></p>");
+            result.forEach((item) => {
+                $("<a/>", {
+                    "href": "#epub_area",
+                    "style": "display: block;",
+                    data: {'ref': item.cfi},
+                    text: item.excerpt.replaceAll(q, `<strong>${q}</strong>`),
+                    click: function() {
+                        rendition.display($(this).data("ref"));
+                        rendition.annotations.highlight($(this).data("ref"));
+                    }
+                }).appendTo(p);
+                $("<br/>").appendTo(p);
+            });
+
+            $('#search-result').html(p);
+        });
+    }
+
+    function enter_key(event) {
+        event = event || window.event;
+        q = $("#full-search")[0].value;
+        if (event.keyCode == 13) {
+            search(q);
+        }
+    }
+
+    
+    //选择标注
+    rendition.on("selected", function(cfiRange, contents) {
+        rendition.annotations.underline(cfiRange);
+    });
+
+</script>
+{% endblock %}

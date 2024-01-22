@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="doudou">
+    <meta name="description" content="畅游于文本、图书、图片、音乐、视频的世界中">
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    <link href="{{ url_for('static', filename='jpg/pxyz.jpg') }}" rel="shortcut icon" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% block styles %}
+    {% endblock %}
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('itempad.index') }}">内容</a></li>
+            <li><a href="{{ url_for('upload.index') }}">上传</a></li>
+            <li><a href="{{ url_for('message.index') }}">消息</a></li>
+            <li><a href="{{ url_for('user.index') }}">我的</a></li>
+        </ul>
+    </nav>
+    <main>
+        {% for msg in get_flashed_messages() %}
+        <p>{{ msg }}</p>
+        {% endfor %}
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <span>©pxyz 畅游于<a href="{{ url_for('itempad.search', kw='tag_txt') }}">文本</a>、<a href="{{ url_for('itempad.search', kw='tag_epub') }}">图书</a>、<a href="{{ url_for('itempad.search', kw='tag_jpg') }}">图片</a>、<a href="{{ url_for('itempad.search', kw='tag_mp3') }}">音乐</a>、<a href="{{ url_for('itempad.search', kw='tag_mp4') }}">视频</a>的世界中</span>
+        {% if not user %}
+            <a href="{{ url_for('user.login') }}">登录</a>
+            <a href="{{ url_for('user.register') }}">注册</a>
+        {% else %}
+            <a href="{{ url_for('user.logout') }}">退出</a>
+        {% endif %}
+    </footer>
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jszip-3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/epub-0.3.88.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    {% block script %}
+    {% endblock %}
+</body>
+</html>

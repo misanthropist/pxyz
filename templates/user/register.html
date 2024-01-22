@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="{{ url_for('user.register') }}" method="post">
+    <label for="username">用户名：</label>
+    <br>
+    <input id="username" name="username" required type="text">
+    <br>
+    <label for="password">密码：</label>
+    <br>
+    <input id="password" name="password" required type="password">
+    <br>
+    <label for="password2">重复密码：</label>
+    <br>
+    <input id="password2" name="password2" required type="password">
+    <br><br>
+    <input type="submit" value="注册">
+</form>
+
+{% endblock %}

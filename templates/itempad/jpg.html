@@ -1,0 +1,21 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ item.title }}
+{% endblock %}
+
+{% block content %}
+
+<div id="jpg_area">
+    <h3>
+        {% for keyword in item.title.split("_") %}
+            <a href="{{ url_for('itempad.search', kw=keyword) }}">{{ keyword }}</a>
+        {% endfor %}
+    </h3>
+    <img src="{{ item.file_url }}" style="max-width: 900px">
+</div>
+
+{{ macros.render_item_desc(item, user) }}
+
+{% endblock %}

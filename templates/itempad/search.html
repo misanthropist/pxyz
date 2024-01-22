@@ -1,0 +1,19 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ pagination.total }} 条搜索结果
+{% endblock %}
+
+{% block content %}
+    <form id="search" action="{{ url_for('itempad.search') }}" method="GET">
+        <input type="text" name="kw" id="kw" placeholder="{{ session.get('kw') }}">
+    </form>
+    <div id="items">
+        {{ macros.render_items(pagination, user) }}
+    </div>
+
+    <div id="pages">
+        {{ macros.render_pagination(pagination, 'itempad.search') }}
+    </div>
+{% endblock %}

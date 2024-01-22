@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block style %}
+{% endblock %}
+
+{% block title %}
+Pxyz - 上传
+{% endblock %}
+
+
+{% block content %}
+    <form action="{{ url_for('upload.index') }}" enctype="multipart/form-data" method="POST">
+        <label for="txt">文本：</label>
+        <input type="file" id="txt" name="txt" accept=".txt">
+        <label for="txt_cover">文本封面：</label>
+        <input type="file" id="txt_cover" name="txt_cover" accept=".jpg">
+        <label for="txt_title">文本标题：</label>
+        <input type="text" id="txt_title" name="txt_title">
+        <br>
+
+        <label for="pics">图集：</label>
+        <input type="file" id="pics" name="pics" accept=".jpg" multiple>
+        <label for="pics_cover">图集封面：</label>
+        <input type="file" id="pics_cover" name="pics_cover" accept=".jpg">
+        <label for="pics_title">图集标题：</label>
+        <input type="text" id="pics_itle" name="pics_title">
+        <br>
+
+        <label for="songs">歌单：</label>
+        <input type="file" id="songs" name="songs" accept=".mp3" multiple>
+        <label for="songs_cover">歌单封面：</label>
+        <input type="file" id="songs_cover" name="songs_cover" accept=".jpg">
+        <label for="songs_title">歌单标题：</label>
+        <input type="text" id="songs_title" name="songs_title">
+        <br>
+
+        <label for="epub">电子书：</label>
+        <input type="file" id="epub" name="epub" accept=".epub">
+        <label for="epub_cover">电子书封面：</label>
+        <input type="file" id="epub_cover" name="epub_cover" accept=".jpg">
+        <label for="epub_title">电子书标题：</label>
+        <input type="text" id="epub_title" name="epub_title">
+        <br>
+
+        <label for="mp4">短视频：</label>
+        <input type="file" id="mp4" name="mp4" accept=".mp4">
+        <label for="mp4_cover">短视频封面：</label>
+        <input type="file" id="mp4_cover" name="mp4_cover" accept=".jpg">
+        <label for="mp4_title">短视频标题：</label>
+        <input type="text" id="mp4_title" name="mp4_title">
+        <br>
+        <input type="submit" value="开始上传">
+    </form>
+{% endblock %}

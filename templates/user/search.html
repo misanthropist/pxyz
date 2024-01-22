@@ -1,0 +1,19 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ pagination.total }} 条搜索结果
+{% endblock %}
+
+{% block content %}
+    <form id="search" action="{{ url_for('user.search') }}" method="GET">
+        <input type="text" name="ukw" id="ukw" placeholder="{{ session.get('ukw') }}">
+    </form>
+    <div id="users">
+        {{ macros.render_users(pagination, user) }}
+    </div>
+
+    <div id="pages">
+        {{ macros.render_pagination(pagination, 'user.search') }}
+    </div>
+{% endblock %}

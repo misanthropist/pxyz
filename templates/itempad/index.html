@@ -1,0 +1,21 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+Pxyz - 内容
+{% endblock %}
+
+{% block content %}
+    <form id="search" action="{{ url_for('itempad.search') }}" method="GET">
+        <input type="text" name="kw" id="kw" placeholder="search">
+    </form>
+    <div id="items">
+        <div id="items">
+            {{ macros.render_items(pagination, user) }}
+        </div>
+    </div>
+
+    <div id="pages">
+        {{ macros.render_pagination(pagination, 'itempad.index') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ item.title }}
+{% endblock %}
+
+{% block styles %}
+<style>
+    #txt_area {
+        font-size: 1rem;
+        text-align: left;
+        background-color: #8e7f6b;
+        font-family: "Consolas", "monospace";
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow: visible;
+        margin: 0; 
+        padding: 0 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h3>{{ item.title }}</h3>
+    <a href="#bottom" id="top">↓底部</a>
+    <a href="#" id="txt_prev_jump">前跳</a>
+    <a href="#" id="txt_next_jump">后跳</a>
+    <pre id="txt_area"></pre>
+    <a href="#top" id="bottom">↑顶部</a>
+    <a href="#txt_area" id="txt_prev">上一页</a>
+    <a href="#txt_area" id="txt_next">下一页</a>
+    {{ macros.render_item_desc(item, user) }}
+{% endblock %}
+
+{% block script %}
+    <script>
+        $.ajax({
+            url: "{{ item.file_url }}",
+            success: function(data) {
+                var result = data.replace('\r', '').split('\n\n'),
+                    i = 0,
+                    len = result.length,
+                    txt_title = "{{ item.title }}";
+                    
+                if (!Boolean(localStorage.getItem(txt_title))) {
+                    localStorage.setItem(txt_title, 0);
+                    $("#txt_area").html(result[0]);
+                } else {
+                    i = localStorage.getItem(txt_title);
+                    $("#txt_area").html(result[i]);
+                }
+                $("#txt_prev_jump").click(function() {
+                    i = Number.parseInt(i/2);
+                    $("#txt_area").html(result[i]);
+                    localStorage.setItem(txt_title, i);
+                });
+                $("#txt_next_jump").click(function() {
+                    i = Number.parseInt((len+i)/2);
+                    $("#txt_area").html(result[i]);
+                    localStorage.setItem(txt_title, i);
+                });
+                $('#txt_next').click(function() {
+                    i += 1;
+                    if (i > len) {
+                        i = i-len;
+                    }
+                    $("#txt_area").html(result[i]);
+                    localStorage.setItem(txt_title, i);
+                });
+                $('#txt_prev').click(function() {
+                    i -= 1;
+                    if (i < 0) {
+                        i = i+len;
+                    }
+                    $("#txt_area").html(result[i]);
+                    localStorage.setItem(txt_title, i);
+                });
+            }
+        });
+    </script>
+{% endblock %}

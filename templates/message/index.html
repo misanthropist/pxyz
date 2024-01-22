@@ -1,0 +1,38 @@
+{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+
+{% block title %}
+Pxyz - 消息
+{% endblock %}
+
+
+{% block style %}
+<style>
+    body {background: #f3f4f7;}
+</style>
+{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for message in pagination %}
+            <li>{{ message.content|safe }}
+                <span class="timestamp">{{ (message.timestamp|string).split('.')[0] }}</span>
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+    <div id="pages">
+        {{ macros.render_pagination(pagination,  'itempad.index') }}
+    </div>
+    <form action="{{ url_for('message.index') }}" method="POST">
+        <label for="send_content">发送内容：</label>
+        <br>
+        <textarea name="send_content" id="send_content" cols="30" rows="10"></textarea>
+        <br>
+        <label for="receiver">接收人：</label>
+        <br>
+        <input type="text" id="receiver" name="receiver">
+        <br>
+        <input type="submit" value="发送">
+    </form>
+{% endblock %}

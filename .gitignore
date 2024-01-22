@@ -1,0 +1,12 @@
+# Directories
+__pycache__
+upload
+
+# Environments
+
+# Development
+
+# Files
+*.db
+
+# py
